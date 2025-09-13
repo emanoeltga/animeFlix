@@ -1,6 +1,5 @@
 package com.correia.animeFlix.service;
 
-import com.correia.animeFlix.domain.dto.CardDTO;
 import com.correia.animeFlix.domain.dto.CategoriaDTO;
 import com.correia.animeFlix.domain.model.Categoria;
 import com.correia.animeFlix.repository.CategoriaRepository;
@@ -16,26 +15,82 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public List<CategoriaDTO> getCategorias() {
-        List<Categoria> categorias = categoriaRepository.findAll();
-        return categorias.stream().map(this::toDTO).collect(Collectors.toList());
+    // Buscar Categoria por ID
+    public CategoriaDTO getCategoriasId(Long id) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+        return CategoriaDTO.fromEntity(categoria);
     }
 
-    private CategoriaDTO toDTO(Categoria categoria) {
-        CategoriaDTO categoriaDTO = new CategoriaDTO();
-        categoriaDTO.setCategoria(categoria.getNome());
-        categoriaDTO.setCard(categoria.getCard().stream()
-                .map(card -> new CardDTO(card.getNome(), card.getImage(), card.getLink()))
-                .collect(Collectors.toList()));
+    // Buscar todas as Categorias
+    public List<CategoriaDTO> getCategorias() {
+        return categoriaRepository.findAll()
+                .stream()
+                .map(CategoriaDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<CategoriaDTO> getCategoriasOrdenadas() {
+        //List<Categoria> categorias = categoriaRepository.findAllByOrderByNomeAsc();
+        return categoriaRepository.findAllByOrderByNomeAsc()
+                .stream()
+                .map(CategoriaDTO::fromEntity)
+                .collect(Collectors
+                        .toList());
+    }
+
+    /**
+     * @Todo
+     * @Futura implementar algoritimo para analisar recomendações
+     */
+    public List<CategoriaDTO> getRandomCategorias() {
+        return categoriaRepository.findRandomCategorias()
+                .stream()
+                .map(CategoriaDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /*
+    // Criar uma nova Categoria
+    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
+        Categoria categoria = categoriaDTO.toEntity();
+        Categoria saved = categoriaRepository.save(categoria);
+        return CategoriaDTO.fromEntity(saved);
+    }*/
+
+    // Criar a Categoria
+    // Criar uma nova Categoria ou reaproveitar se já existir
+    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
+        String nomeCategoria = categoriaDTO.getNome().toUpperCase();
+
+        Categoria categoria = categoriaRepository.findByNome(nomeCategoria)
+                .orElseGet(() -> categoriaDTO.toEntity());
+
+        // adiciona apenas novos cards
+        categoriaDTO.getCard().forEach(cardDTO -> {
+            boolean exists = categoria.getCard().stream()
+                    .anyMatch(c -> c.getNome().equalsIgnoreCase(cardDTO.getNome()));
+            if (!exists) {
+                categoria.getCard().add(cardDTO.toEntity());
+            }
+        });
+
+        categoria.setNome(nomeCategoria); // garante uppercase
+        Categoria saved = categoriaRepository.save(categoria);
+        return CategoriaDTO.fromEntity(saved);
+    }
+
+
+    public CategoriaDTO update(Long id, CategoriaDTO categoriaDTO) {
+        Categoria categoria = categoriaDTO.toEntity();
+        categoria.setId(id);
+        Categoria saved = categoriaRepository.save(categoria);
+        return CategoriaDTO.fromEntity(saved);
+    }
+    public CategoriaDTO delete(Long id){
+        CategoriaDTO categoriaDTO=getCategoriasId(id);
+        categoriaRepository.deleteById(id);
         return categoriaDTO;
     }
 
-    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
-        Categoria categoria = new Categoria();
-        categoria.setNome(categoriaDTO.getNome());
-        categoria.setCard(categoriaDTO.cardDTO(categoriaDTO.getCard()));
-        categoriaRepository.save(categoria);
-        return null;
-    }
 }
-
