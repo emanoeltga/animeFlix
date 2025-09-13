@@ -29,5 +29,13 @@ public class CategoriaService {
                 .collect(Collectors.toList()));
         return categoriaDTO;
     }
+
+    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
+        Categoria categoria = new Categoria();
+        categoria.setNome(categoriaDTO.getNome());
+        categoria.setCard(categoriaDTO.cardDTO(categoriaDTO.getCard()));
+        categoriaRepository.save(categoria);
+        return null;
+    }
 }
 
