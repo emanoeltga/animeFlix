@@ -4,12 +4,12 @@ import java.util.List;
 
 public class HomePage {
     private String pagina;
-    private List<Categoria> sugeridos;
+    private List<Card> sugeridos;
     private List<Categoria> categorias;
 
     public HomePage() {}
 
-    public HomePage(String pagina, List<Categoria> sugeridos, List<Categoria> categorias) {
+    public HomePage(String pagina, List<Card> sugeridos, List<Categoria> categorias) {
         this.pagina = pagina;
         this.sugeridos = sugeridos;
         this.categorias = categorias;
@@ -23,11 +23,11 @@ public class HomePage {
         this.pagina = pagina;
     }
 
-    public List<Categoria> getSugeridos() {
+    public List<Card> getSugeridos() {
         return sugeridos;
     }
 
-    public void setSugeridos(List<Categoria> sugeridos) {
+    public void setSugeridos(List<Card> sugeridos) {
         this.sugeridos = sugeridos;
     }
 

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class CategoriaService {
-
     @Autowired
     private CategoriaRepository categoriaRepository;
 
@@ -39,24 +38,12 @@ public class CategoriaService {
                         .toList());
     }
 
-    /**
-     * @Todo
-     * @Futura implementar algoritimo para analisar recomendações
-     */
     public List<CategoriaDTO> getRandomCategorias() {
         return categoriaRepository.findRandomCategorias()
                 .stream()
                 .map(CategoriaDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-
-    /*
-    // Criar uma nova Categoria
-    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
-        Categoria categoria = categoriaDTO.toEntity();
-        Categoria saved = categoriaRepository.save(categoria);
-        return CategoriaDTO.fromEntity(saved);
-    }*/
 
     // Criar a Categoria
     // Criar uma nova Categoria ou reaproveitar se já existir

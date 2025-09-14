@@ -9,13 +9,15 @@ public class HomePageService {
 
     @Autowired
     private CategoriaService categoriaService;
-    public HomePageDTO getIntialHome(){
+    @Autowired
+    private CardService cardService;
+    public HomePageDTO getIntialHome(String findPage){
         HomePageDTO page = new HomePageDTO.Builder()
-                .pagina("HOME")
+                .pagina(findPage)
                 .categorias(categoriaService.getCategoriasOrdenadas())
-                .sugeridos(categoriaService.getCategoriasOrdenadas())
+                .sugeridos(cardService.findSugeridos())
                 .build();
 
-        return new HomePageDTO();
+        return page;
     }
 }
